@@ -2,6 +2,12 @@
 
 class Tokenizer():
 
+    def __init__(self, fileName):
+        pass
+
+    def _tokenizeLine():
+        pass
+
     def getToken():
         pass
 
