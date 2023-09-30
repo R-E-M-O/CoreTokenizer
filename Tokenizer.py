@@ -5,6 +5,7 @@
 class Tokenizer():
     _program_tokens = []
     _program_tokens_counter = 0
+    _parse_tree_counter = 0
     
     #private buffered reader
     _reader = None
@@ -37,7 +38,63 @@ class Tokenizer():
     def getToken(token) -> int: 
         match token:
             # dont forget to add cases for all legal tokens. Reference the DFA homework!
-             case _:
+            case "program":
+                pass
+            case "begin":
+                pass
+            case "end":
+                pass
+            case "int":
+                pass
+            case "if":
+                pass
+            case "then":
+                pass
+            case "else":
+                pass
+            case "while":
+                pass
+            case "loop":
+                pass
+            case "read":
+                pass
+            case "write":
+                pass
+            case ";"
+                pass
+            case ",":
+                pass
+            case "=":
+                # here you will need to utilize greedy tokenizing
+                pass
+            case "!":
+                # check if "=" folows. if true, need to use greedy tokenizing
+                pass
+            case "[":
+                pass
+            case "]":
+                pass
+            case "&&":
+                pass
+            case "||":
+                pass
+            case "(":
+                # Time for recursive descent parsing!
+                pass
+            case "+":
+                pass
+            case "-":
+                pass
+            case "*":
+                pass
+            case "<":
+                # check if "=" folows. if true, need to use greedy tokenizing
+                pass
+            case ">":
+                # check if "=" folows. if true, need to use greedy tokenizing
+                pass
+            case _:
+                return 34
 
     def skipToken():
         pass
