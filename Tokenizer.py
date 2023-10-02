@@ -3,13 +3,20 @@
 
 
 class Tokenizer():
+    # legal Core tokens
     _program_tokens = []
-    _program_tokens_counter = 0
-    _parse_tree_counter = 0
+
+    #tokens that are scanned from the reader, not in cores proper manner (may contain "!=<==")
+    _read_tokens = []
+
+    # corresponding Core token numbers
+    _program_token_numbers = []
+
+    _program_tokens_index = 0
+    _parse_tree_index = 0
     
     #private buffered reader
     _reader = None
-
 
 
     def __init__(self, fileName):
@@ -18,24 +25,25 @@ class Tokenizer():
         # tokenize
         self._tokenizeLine()
 
+
     def _tokenizeLine(self):
         line = self._reader.readline()
         while str.isspace(line):
             line = self._reader.readline()
 
         # tokenize line
-        tokens = line.split()
-        for token in tokens:
+        self._read_tokens = line.split()
+        for token in self._read_tokens:
+            tokenIndex = self._read_tokens.index(token)
+
             # Once first iteration is working, come back here and add code to account for greedy tokenizing!
             # Will need: (counter of 2) or (until whitespace) if certain symbols are in the token. 
-            token_and_number = (token,)
-            token_and_number[1] = self.getToken(token_and_number[0])
-        
+            self._program_token_numbers.extend(self.getToken(token))
 
         pass
-        
 
-    def getToken(token) -> int: 
+
+    def getToken(self, token) -> int: 
         match token:
             # dont forget to add cases for all legal tokens. Reference the DFA homework!
             case "program":
@@ -60,15 +68,24 @@ class Tokenizer():
                 pass
             case "write":
                 pass
-            case ";"
+            case ";":
                 pass
             case ",":
                 pass
             case "=":
                 # here you will need to utilize greedy tokenizing
+                nextToken = self.tokenLookAhead()
+
+                if nextToken == "=":
+                    # greedy tokenizing
+                    pass
                 pass
             case "!":
                 # check if "=" folows. if true, need to use greedy tokenizing
+                nextToken = self.tokenLookAhead()
+                if nextToken == "=":
+                    # greedy tokenizing
+                    pass
                 pass
             case "[":
                 pass
@@ -89,15 +106,27 @@ class Tokenizer():
                 pass
             case "<":
                 # check if "=" folows. if true, need to use greedy tokenizing
+                nextToken = self.tokenLookAhead()
+                if nextToken == "=":
+                    # greedy tokenizing
+                    pass
                 pass
             case ">":
                 # check if "=" folows. if true, need to use greedy tokenizing
+                nextToken = self.tokenLookAhead()
+                if nextToken == "=":
+                    # greedy tokenizing
+                    pass
                 pass
             case _:
                 return 34
 
-    def skipToken():
+    # token lookahead
+    def tokenLookAhead(self) -> str:
         pass
+
+    def skipToken(self):
+        self._program_tokens_index += 1
 
     def intVal() -> int:
         pass
