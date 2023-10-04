@@ -49,12 +49,17 @@ class CoreScanner():
     def _tokenizeLine(self):
         line = self._reader.readline()
 
+        # check if white space
+        while line.isspace():
+            line = self._reader.readline()
+
         # add a space before and after each special symbol. better for reading
         for symbol in self._core_symbols:
             line = line.replace(symbol, " " + symbol + " ")
 
         # tokenize line
         lineTokens = line.split()
+
 
         i = 0
         while i < len(lineTokens):
@@ -102,7 +107,7 @@ class CoreScanner():
         elif token.isdigit():
             return 31
         # check if token is an id
-        elif token[0].isupper() and all(c.isupper() or c.isdigit() for c in token):
+        elif token[0].isupper() and all(c.isupper() or c.isdigit() for c in token[1:]):
             return 32
         # check if token is EOF
         elif token == None:
@@ -111,11 +116,12 @@ class CoreScanner():
         else:
             return 34
             
-
+    # skip token and adjust cursor, and call tokenize line
     def skipToken(self):
         self._token_cursor += 1
         if self._token_cursor >= len(self._program_tokens):
             self._tokenizeLine()
+
 
 
     def intVal(self) -> int:
