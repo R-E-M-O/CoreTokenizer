@@ -1,0 +1,14 @@
+Files included:
+1. CoreScanner.py - Contains the CoreScanner class responsible for tokenization and scanning operations.
+2. main.py - The main driver script that utilizes the CoreScanner and prints out token numbers.
+
+Instructions to the grader:
+1. Ensure you have Python installed on your system.
+2. Place both CoreScanner.py and main.py in your working directory.
+3. To execute the program (say we have "test1.txt" containing a Core program), use the command `python main.py [INPUT_FILE_NAME]`. Replace `[INPUT_FILE_NAME]` with the name of the file you wish to tokenize.
+   Example: `python main.py test1.txt`
+4. The program will print token numbers until it reaches the end of the file or encounters an error.
+
+Notes on output:
+- The program will print the token number 33 to indicate the end of the file.
+- If there is an invalid token, the program will print the token number 34 and halt its execution.
