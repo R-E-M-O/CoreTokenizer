@@ -1,0 +1,21 @@
+The Tokenizer/Scanner class consists of the following:
+- A constructor that takes input from the main.py file that takes a command line argument in the form of a filename. This constructor initializes the scanner object in main by opening a file reader, initializing a program tokens array that holds the Core tokens in the program, a token cursor variable that holds the index of the current token that the scanner is working with in the token array. It also calls the private method in the class, tokenizeLine()
+- A private method called tokenizeLine() that first reads a line, returns EOF if its at the end of file, reads over lines that only contain whitespaces,
+puts a space before and after each special symbol token in the line (easier to read), splits the words/symbols into their own element in an array,
+loops through each token and adds it to the program tokens array. uses greedy tokenizing if the current token is a symbol and the next is too.
+- A method called getToken() that returns an int based on the kind of token (i.e. 1 for program, 33 for EOF, 34 for error)
+- A method called skipToken() that incrememnts the token cursor and calls tokenizeLine() if it has reached the end of the current line
+- A method called intVal() that returns an int, which is the int value of an int token in the Core program
+- A method called idName() that returns a string, which is the name of an id token in the Core program
+- A del special method that is called when an object is deleted, closes the file reader
+
+
+To use the Core scanner, you need to initiate a CoreScanner object in main(), as done in main().
+The idea is that you always want to keep reading lines until you hit an error or EOF.
+Naturally we use a while loop and just output the result of getToken() in each iteration and call skipToken() afterwards.
+This will stop once we hit the EOF or an unrecognized token.
+
+
+I tested the Tokenizer by using the provided sample Core programs that were on Piazza.
+I also tested it by modifying these Core programs a little bit by adding an invalid token, extra whitespaces, etc.
+There are no errors or bugs that I am aware of. 

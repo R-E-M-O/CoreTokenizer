@@ -49,6 +49,11 @@ class CoreScanner():
     def _tokenizeLine(self):
         line = self._reader.readline()
 
+        # check if EOF
+        if line == '':
+            self._program_tokens.append("EOF")
+            return
+
         # check if white space
         while line.isspace():
             line = self._reader.readline()
@@ -56,6 +61,7 @@ class CoreScanner():
         # add a space before and after each special symbol. better for reading
         for symbol in self._core_symbols:
             line = line.replace(symbol, " " + symbol + " ")
+
 
         # tokenize line
         lineTokens = line.split()
@@ -89,12 +95,8 @@ class CoreScanner():
             self._program_tokens.append(token)
             i += 1
 
-
     # returns an int corresponding to a keyword, integer, id, EOF, or error
     def getToken(self) -> int: 
-
-        if self._token_cursor >= len(self._program_tokens):
-            return 33
 
         token = self._program_tokens[self._token_cursor]
 
@@ -103,15 +105,15 @@ class CoreScanner():
         # check if token is a symbol
         elif token in self._core_symbols:
             return self._core_symbols[token]
+        # check if token is EOF
+        elif token == "EOF":
+            return 33
         # check if token is an integer
         elif token.isdigit():
             return 31
         # check if token is an id
         elif token[0].isupper() and all(c.isupper() or c.isdigit() for c in token[1:]):
             return 32
-        # check if token is EOF
-        elif token == None:
-            return 33
         # token is an error
         else:
             return 34
@@ -122,16 +124,15 @@ class CoreScanner():
         if self._token_cursor >= len(self._program_tokens):
             self._tokenizeLine()
 
-
-
+    # get the token's int value
     def intVal(self) -> int:
-        return 31
+        return int(self._program_tokens[self._program_tokens])
 
-
+    # get the token's identifier name
     def idName(self) -> str:
         return self._program_tokens[self._token_cursor]
     
-    
+    # close the reader
     def __del__(self):
         self._reader.close()
 
