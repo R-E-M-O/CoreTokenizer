@@ -3,7 +3,8 @@ from CoreScanner import CoreScanner
 
 def main(fileName):
     scanner = CoreScanner(fileName)
-
+    parser = Parser()
+    
     output_Number : int = None
 
     while (output_Number != 33) and (output_Number != 34):

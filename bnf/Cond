@@ -1,0 +1,11 @@
+from bnf import Exp, Op
+
+
+class Cond():
+    _e1: Exp = None
+    _e2: Exp = None
+    _op: Op = None
+
+
+    def parseCond():
+        pass
