@@ -62,7 +62,7 @@ class If():
     def printIf(self):
         print("if ")
         self._c.printCond()
-        print("then")
+        print(" then")
         self._ss1.printSS()
 
         # if ss2 is null from parsing, we know there is no else 
