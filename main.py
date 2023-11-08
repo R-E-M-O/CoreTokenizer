@@ -1,6 +1,7 @@
 import sys
 from CoreScanner import CoreScanner
 
+
 def main(fileName):
 
     # initiate object
