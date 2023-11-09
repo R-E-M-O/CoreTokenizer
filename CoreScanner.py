@@ -1,3 +1,5 @@
+import sys
+
 class CoreScanner():
 
     _core_keywords = {
@@ -125,7 +127,7 @@ class CoreScanner():
 
     # get the token's int value
     def intVal(self) -> int:
-        return int(self._program_tokens[self._program_tokens])
+        return int(self._program_tokens[self._token_cursor])
 
     # get the token's identifier name
     def idName(self) -> str:
@@ -135,6 +137,12 @@ class CoreScanner():
     def __del__(self):
         self._reader.close()
 
-
-    
+if __name__ == "__main__":
+    progFile = sys.argv[1]
+    t = CoreScanner(progFile)
+    tokNo = 0
+    while tokNo != 33 and tokNo != 34:
+        tokNo = t.getToken()
+        print(tokNo)
+        t.skipToken()
     

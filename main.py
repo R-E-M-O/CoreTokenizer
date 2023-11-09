@@ -1,21 +1,26 @@
 import sys
-from CoreScanner import CoreScanner
+from BNFClasses import Prog
+from BNFClasses import initTokenizer
 
 
-def main(fileName):
+def main(progFile, inputFile):
 
-    # initiate object
-    scanner = CoreScanner(fileName)
+    initTokenizer(progFile, inputFile)
 
-    # get first token
-    output_Number : int = None
+    prog = Prog()
 
-    # loop through tokens
-    while (output_Number != 33) and (output_Number != 34):
-        output_Number = scanner.getToken()
-        print(output_Number)
-        scanner.skipToken()
+    prog.parseProg()
+
+    print("\n\n\n")
+    print("Program:\n")
+    prog.printProg()
+    print("\n\n\n")
+
     
+    print("\n\n\n")
+    print("Program Output:\n")
+    prog.execProg()
+    print("\n\n\n")
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2])
