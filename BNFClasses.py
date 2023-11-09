@@ -1,15 +1,10 @@
 from CoreScanner import CoreScanner
 from abc import abstractmethod
 
-global inputList
-inputList = []
-
 def initTokenizer(progFile, inputFile):
     global t, input
     t = CoreScanner(progFile)
     input = open(inputFile)
-    for line in input:
-        inputList.extend(line.split())
         
 
     
@@ -481,9 +476,9 @@ class Id():
             print("Error: Id is not declared")
             exit(1)
 
-        val: str = ""
 
-        # TODO: fix the recursion of this function being called. It is being called even though inputList is empty
+        # read in the value
+        val = input.readline()
 
         if len(val) <= 0:
             print("Error: Input file is empty")
@@ -633,7 +628,7 @@ class IdList():
 
     def writeIdList(self):
         self._id.printId()
-        print(" = ")
+        print(" = ", end="")
         print(str(self._id.getIdVal())+ "\n", end="")
         if self._idList is not None:
             self._idList.writeIdList()
