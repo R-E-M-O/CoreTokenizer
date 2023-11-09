@@ -90,7 +90,6 @@ class CoreScanner():
                 lineTokens.pop(i+1)
 
 
-
             # append the token
             self._program_tokens.append(token)
             i += 1

@@ -1,8 +1,5 @@
 import CoreScanner
 from abc import abstractmethod
-from bnf import DS
-from bnf import SS
-import CoreScanner
 
 
 def initTokenizer(progFile, inputFile):
@@ -13,8 +10,8 @@ def initTokenizer(progFile, inputFile):
 
 # program non-terminal class
 class Prog():
-    _ds: DS = None
-    _ss: SS = None
+    _ds = None
+    _ss = None
 
     def parseProg(self):
         
@@ -73,8 +70,8 @@ class Prog():
 
 
 class Assign():
-    _id: Id = None
-    _exp: Exp = None
+    _id= None
+    _exp = None
 
     def parseAssign(self):
         tokNo: int = None
@@ -114,11 +111,16 @@ class Assign():
 
 class Stmt():
     _altNo: int = 0
-    _s1: Assign = None
-    _s2: If = None
-    _s3: Loop = None
-    _s4: Input = None
-    _s5: Output = None
+    # Assign
+    _s1 = None
+    # If
+    _s2 = None
+    # Loop
+    _s3 = None
+    # Input
+    _s4 = None
+    # Output
+    _s5 = None
 
     def parseStmt(self, t: CoreScanner):
         tokNo: int = t.getToken()
@@ -183,8 +185,8 @@ class SS():
 
 
 class Loop():
-    _c: Cond = None
-    _ss1: SS = None
+    _c = None
+    _ss1 = None
 
     def parseLoop(self, t: CoreScanner):
         tokNo: int = None
@@ -238,9 +240,9 @@ class Loop():
 
 
 class If():
-    _c: Cond = None
-    _ss1: SS = None
-    _ss2: SS = None
+    _c= None
+    _ss1 = None
+    _ss2 = None
     
     def parseIf(self, t: CoreScanner):
         tokNo: int = None
@@ -331,9 +333,19 @@ class Id():
     eIds = {}
     idCount = 0
 
+    def __init__(self, n: str):
+        self._name = n
+        self._declared = True
+        self._initialized = False
+
+
+    # this is for DS
+    @classmethod
     def parseId1(cls):
         tokNo: int = None
         tokNo = t.getToken()
+
+        name: str = t.idName()
 
         # error check for the id token
         if tokNo != 32:
@@ -343,27 +355,88 @@ class Id():
         t.skipToken()
 
         # check if the id is already in the dictionary
-        if t.idName() in cls.eIds:
+        if name in cls.eIds:
             # if it is, exit the program
             print("Error: Id already exists")
             exit(1)
+
+        declaredId = Id(name)
+        cls.eIds[name] = declaredId
+        cls.idCount += 1
+
+        return declaredId
+
+    # This is for SS
+    @classmethod
+    def parseId2(cls):
+        tokNo: int = None
+        tokNo = t.getToken()
+
+        # error check for the id token
+        if tokNo != 32:
+            print("Error: Expected id, got " + str(tokNo))
+            exit(1)
+
+        name: str = t.idName()
+        t.skipToken()
+
+        # check if the id is already in the dictionary
+        if name not in Id.eIds:
+            # if not, exit the program
+            print("Error: Id does not exist")
+            exit(1)
         
-        cls.eIds[t.idName()] = cls(t.idName())
-        return cls.eIds[t.idName()]
+        return cls.eIds[name]
 
-
-
-    def __init__(self, n: str):
-        self.name = n
-        self.declared = False
-        self.initialized = False
-
-    @staticmethod
-    def parseId1():
+    def getIdVal(self) -> int:
+        # val initialized check
+        if self._val is None:
+            print("Error: Id has no value")
+            exit(1)
         
+        return self._val
+    
+    def setIdVal(self, v: int):
+        #check if declared is true
+        if not self._declared:
+            print("Error: Id is not declared")
+            exit(1)
+        
+        self._val = v
+        self._initialized = True
 
-    def parseId2():
-        pass
+    def printId(self):
+        # make sure Id is declared
+        if not self._declared:
+            print("Error: Id is not declared")
+            exit(1)
+
+        print(self._name)
+
+    def readId(self):
+        # make sure Id is declared
+        if not self._declared:
+            print("Error: Id is not declared")
+            exit(1)
+
+        # read the input file
+        readVal = input.readline()
+
+        # check if the line is empty
+        if readVal == "":
+            print("Error: Input file is empty")
+            exit(1)
+
+        # check if the line is a number
+        if not readVal.isdigit():
+            print("Error: Input file is not a number")
+            exit(1)
+
+        # set the Id's value to the input
+        self._val = int(readVal)
+        self._initialized = True
+
+
 
 
 
@@ -372,13 +445,61 @@ class Id():
 
 
 class Cond():
-    _e1: Exp = None
-    _e2: Exp = None
-    _op: Op = None
+
+    _c1 = None
+
+    def parseCond(self):
+        tokNo: int = None
+        tokNo = t.getToken()
+
+        # error chceck for (, [, or !
+        if tokNo not in [15, 16, 17]:
+            print("Error: Expected (, [, or !, got " + str(tokNo))
+            exit(1)
+        
+        # handle ( token
+        if tokNo == 20:
+            t.skipToken()
+            self._c1 = Comp()
+            self._c1.parseComp()
+            
+        # handle ! token    
+        elif tokNo == 15:
+            t.skipToken()
+            self._c1 = Cond()
+            self._c1.parseCond()
+        
+        # handle [ token
+        elif tokNo == 16:
+            t.skipToken()
+            self._c1 = Cond()
+            self._c1.parseCond()
+            
+            # check for && or || operators
+            tokNo = t.getToken()
+            if tokNo not in [18, 19]:
+                print("Error: Expected && or ||, got " + str(tokNo))
+                exit(1)
+
+            t.skipToken()
+
+            # parse the second condition
+            self._c2 = Cond()
+            self._c2.parseCond()
+
+            # error check for ] token
+            tokNo = t.getToken()
+            if tokNo != 17:
+                print("Error: Expected ], got " + str(tokNo))
+                exit(1)
+
+            t.skipToken()
 
 
-    def parseCond():
-        pass
+        
+
+        
+
 
     def printCond():
         pass
@@ -386,7 +507,93 @@ class Cond():
     def evalCond():
         pass
 
+
+
+class IdList():
+    _id: Id = None
+    _idList = None
+
+    def parseIdList(self, isDeclared):
+        tokNo: int = None
+        tokNo = t.getToken()
+
+        # error check for the id token
+        if tokNo != 32:
+            print("Error: Expected id, got " + str(tokNo))
+            exit(1)
+
+        # different parsing if boolean already exists in IdList
+        if isDeclared:
+            self._id = Id.parseId1()
+        else:
+            self._id = Id.parseId2()
+
+        tokNo = t.getToken()
+
+        # check if the comma token or semi colon is next (semicolon indicates end of parsing the IdList)
+        if tokNo == 13:
+            t.skipToken()
+            self._idList = IdList()
+            self._idList.parseIdList(isDeclared)
+        elif tokNo == 12:
+            return
+        else:
+            print("Error: Expected , or ;, got " + str(tokNo))
+            exit(1)
+
+    def printIdList(self):
+        self._id.printId()
+        if self._idList is not None:
+            print(", ")
+            self._idList.printIdList()
+        else:
+            # only 1 variable declared, no commas are in the DS
+            return
+        
+
+    def writeIdList(self):
+        self._id.printId()
+
+
+
+        
+
 class DS():
+    _idList: IdList()
+
+    def parseDecl(self):
+        tokNo: int = None
+        tokNo = t.getToken()
+
+        # error check for the int token
+        if tokNo != 4:
+            print("Error: Expected int, got " + str(tokNo))
+            exit(1)
+
+        t.skipToken()
+
+        # parse the id list
+        self._idList = IdList()
+        self._idList.parseIdList(True)
+
+        # error check for the semicolon token
+        tokNo = t.getToken()
+        if tokNo != 12:
+            print("Error: Expected ;, got " + str(tokNo))
+            exit(1)
+        
+        t.skipToken()
+
+    
+    def printDecl(self):
+        print("int ")
+        self._idList.printIdList()
+        print(";")
+            
+
+    
+
+class Decl():
     pass
 
 class Exp():
@@ -394,6 +601,9 @@ class Exp():
     @abstractmethod
     def parseExp(self):
         pass
+
+
+    pass
     
 
 class IntExp(Exp):

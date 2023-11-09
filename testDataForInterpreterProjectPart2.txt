@@ -1,0 +1,116 @@
+Here are three sets of data for the interpreter. Each set consists
+of a Core program followed by a sequence of integers to be input by
+the Core program when it is executed (interpreted). So you have to 
+put these in two separate files as specified in the lab assignment.
+
+The only output that should be produced by the Core program when it is
+executed are the ones corresponding to the WRITE statements in the
+Core program.  Of course, before executing the Core program, your
+interpreter should (pretty-)print it as specified in the lab assignment.
+
+If you note any problems in the data, please e-mail me. If you have
+other data you have created, send me those too or post them on Piazza.
+
+Note that the first program has white space between every pair of
+tokens, the others do not.  If your getToken()/skipToken() need the
+white space, insert them also into the second and third programs (and
+make sure you document the problem in your documentation).
+
+Note that, as far as I know, none of these test data have any
+errors. But the test data that your interpreter will be graded on may
+have three possible types of errors: context-free errors (i.e.,
+violations of the Core BNF grammar), context-sensitive errors (there
+are two in Core: a variable that is used in the statement sequence
+portion without having been declared; a doubly-declared variable), and
+run-time errors (there are two: using the value of an uninitialized
+variable and trying to read a value from an empty input stream). So
+make sure you check for each of these errors.  And if you encounter
+any of them, print an appropriate error message and stop; do not
+proceed further; by the way, this type of situation is a good place to
+use exceptions.
+
+Note also that the test data will only contain legal tokens; i.e., if
+your Tokenizer does not, for example, some particular token-related
+problem, that will not be tested in this part of the project (since that
+was part of the first part of the project).
+
+
+First data set:
+========================================================
+
+program
+int X, Y, XY;
+begin
+read X; Y = 0;
+while 
+( X > 0 ) loop
+            read XY ; write XY ;
+            Y = Y+XY; X = X-1;
+	  end;
+write Y;
+end
+               
+5  7  -4  10  5  -9
+========================================================
+
+For the second program there are three sets of input data; i.e., for
+the same Core program, I have provided three possible sets of input
+data. So you should convert this to three files; the program part
+will be the same in all three files, but the integer data for the
+Core program will be one of the three sets.
+
+Second data set :
+========================================================
+program
+int ABC, D;
+begin
+read ABC;
+read D;
+while (ABC != D)
+     loop 
+       if (ABC > D) then ABC = ABC - D;
+       else D = D - ABC;
+     end;
+end;
+write D;
+end
+
+First set of input data for this program: 9  36 
+
+Second set of input data for this program: 7  24
+
+Third set of input data for this program: 1  15 
+
+========================================================
+
+
+For the third program there are again three sets of input data.
+
+Third data set :
+========================================================
+
+program
+int X1, X4;
+int X2, X3, X7;
+begin
+X1 = 0; X2 = 1; X3 = 1; read X4;
+while (X1<X4) loop
+                X7=X2+X3; X2=X3;
+                X3=X7; X1=X1+1;
+              end;
+write X2;
+end
+
+First set of input data : 5 
+
+Second set of input data : 10 
+
+Third set of input data : 3
+
+========================================================
+
+--Neelam.
+
+p.s.: Any guesses what these programs do? The first program is clearly
+a trivial one but the second and third actually do some meaningful
+computations.
