@@ -7,7 +7,6 @@ def initTokenizer(progFile, inputFile):
     input = open(inputFile)
     
 
-global prettyPrint
 prettyPrint = "\t"
 
 # program non-terminal class
@@ -62,9 +61,10 @@ class Prog():
     def printProg(self):
         print("program", end="")
         self.ds.printDS()
-        print("begin ", end = "")
+        print(" begin")
         self.ss.printSS()
-        print("end", end = "")
+        print("\nend", end = "")
+        
     
     def execProg(self):
         self.ss.execSS()
@@ -101,10 +101,11 @@ class Assign():
 
     
     def printAssign(self):
+        global prettyPrint
         self.id.printId()
         print(" = ", end="")
         self.exp.printExp()
-        print(";\n", end= "")
+        print(";")
 
     def execAssign(self):
         self.id.setIdVal(self.exp.evalExp())
@@ -205,6 +206,10 @@ class SS():
             
 
     def printSS(self):
+        
+        global prettyPrint
+
+        print(prettyPrint, end="")
         self.stmt.printStmt()
 
         if self.ss is not None:
@@ -266,11 +271,14 @@ class Loop():
         
     
     def printLoop(self):
-        print("\nwhile ", end="")
+        global prettyPrint
+        print("\n" + prettyPrint + "while ", end="")
         self.c.printCond()
-        print(" loop {\n", end="")
+        prettyPrint += "\t"
+        print(" loop\n", end="")
         self.ss.printSS()
-        print("}\nend;\n", end="")
+        prettyPrint = prettyPrint[:-1]
+        print(prettyPrint + "end;\n")
 
 
     def execLoop(self):
@@ -279,7 +287,7 @@ class Loop():
 
 
 class If():
-    c= None
+    c = None
     ss1 = None
     ss2 = None
     type: int = 0
@@ -315,7 +323,7 @@ class If():
         if tokNo == 7:
             self.type = 2
             t.skipToken()
-            self.ss2 == SS()
+            self.ss2 = SS()
             self.ss2.parseSS()
         else:
             self.type = 1
@@ -339,19 +347,22 @@ class If():
 
 
     def printIf(self):
+        global prettyPrint
         print("if ", end="")
-        self._c.printCond()
-        print(" then {\n", end="")
-        self._ss1.printSS()
-        print("}\n", end="")
+        self.c.printCond()
+        print(" then")
+        prettyPrint += "\t"
+        self.ss1.printSS()
+        prettyPrint = prettyPrint[:-1]
 
         # if ss2 is null from parsing, we know there is no else 
-        if self._ss2 is not None:
-            print("else {\n", end="")
-            self._ss2.printSS()
-            print("\n}\n", end="")
+        if self.ss2 is not None:
+            print(prettyPrint + "else")
+            prettyPrint += "\t"
+            self.ss2.printSS()
+            prettyPrint = prettyPrint[:-1]
+            print(prettyPrint + "end;")
         
-        print("end;\n", end="")
 
 
     def execIf(self):
@@ -677,7 +688,7 @@ class Decl():
     def printDecl(self):
         print(" int ", end="")
         self._idList.printIdList()
-        print(";\n")
+        print(";", end= "")
 
 class Exp():
 
@@ -710,10 +721,10 @@ class Exp():
     def printExp(self):
         self.fac.printFac()
         if self.type == 2:
-            print(" + ")
+            print(" + ", end="")
             self.exp.printExp()
         elif self.type == 3:
-            print(" - ")
+            print(" - ", end="")
             self.exp.printExp()
 
 
@@ -927,7 +938,7 @@ class Input():
     def printInput(self):
         print("read ", end="")
         self.idList.printIdList()
-        print(";\n", end="")
+        print(";")
 
     def execInput(self):
         self.idList.readIdList()

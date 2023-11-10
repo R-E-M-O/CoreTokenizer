@@ -11,16 +11,14 @@ def main(progFile, inputFile):
 
     prog.parseProg()
 
-    print("\n\n\n")
+    print("\n\n")
     print("Program:\n")
     prog.printProg()
-    print("\n\n\n")
+    print("\n\n")
 
-    
-    print("\n\n\n")
     print("Program Output:\n")
     prog.execProg()
-    print("\n\n\n")
+    print("\n\n")
 
 if __name__ == "__main__":
     main(sys.argv[1], sys.argv[2])
