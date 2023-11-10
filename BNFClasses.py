@@ -5,11 +5,7 @@ def initTokenizer(progFile, inputFile):
     global t, input
     t = CoreScanner(progFile)
     input = open(inputFile)
-        
-
     
-
-
 
 global prettyPrint
 prettyPrint = "\t"
@@ -75,12 +71,12 @@ class Prog():
 
 
 class Assign():
-    _id= None
-    _exp = None
+    id= None
+    exp = None
 
     def parseAssign(self):
         tokNo: int = None
-        self._id = Id.parseId2()
+        self.id = Id.parseId2()
 
         tokNo = t.getToken()
 
@@ -91,8 +87,8 @@ class Assign():
 
         t.skipToken()
 
-        self._exp = Exp()
-        self._exp.parseExp()
+        self.exp = Exp()
+        self.exp.parseExp()
 
         tokNo = t.getToken()
 
@@ -105,13 +101,13 @@ class Assign():
 
     
     def printAssign(self):
-        self._id.printId()
+        self.id.printId()
         print(" = ", end="")
-        self._exp.printExp()
+        self.exp.printExp()
         print(";\n", end= "")
 
     def execAssign(self):
-        self._id.setIdVal(self._exp.evalExp())
+        self.id.setIdVal(self.exp.evalExp())
 
 
 class Stmt():
@@ -130,7 +126,6 @@ class Stmt():
     def parseStmt(self):
         tokNo: int = t.getToken()
 
-
         # error check for statement keywords
         if tokNo not in [5, 8, 32, 10, 11]:
             print("Error: Expected identifier, if, while, read, or write, got " + str(tokNo))
@@ -138,7 +133,7 @@ class Stmt():
 
         # check for assignment
         if tokNo == 32:
-            self._altNo = 1
+            self.altNo = 1
             self.s1 = Assign()
             self.s1.parseAssign()
         # check for if
@@ -284,9 +279,10 @@ class Loop():
 
 
 class If():
-    _c= None
-    _ss1 = None
-    _ss2 = None
+    c= None
+    ss1 = None
+    ss2 = None
+    type: int = 0
     
     def parseIf(self):
         tokNo: int = None
@@ -300,8 +296,8 @@ class If():
         tokNo = t.skipToken()
 
         # parse the if statement's condition
-        self._c = Cond()
-        self._c.parseCond()
+        self.c = Cond()
+        self.c.parseCond()
 
         # error check for the then token
         tokNo = t.getToken()
@@ -311,50 +307,35 @@ class If():
         t.skipToken()
 
         # parse the if statement's first statement sequence
-        self._ss1 = SS()
-        self._ss1.parseSS()
+        self.ss1 = SS()
+        self.ss1.parseSS()
 
-        # check for the else token
         tokNo = t.getToken()
-        if tokNo == 3:
-            ## no else, contains "end;"
+        
+        if tokNo == 7:
+            self.type = 2
             t.skipToken()
-
-            # check for the semicolon token
-            tokNo = t.getToken()
-            if tokNo != 12:
-                print("Error: Expected ;, got " + str(tokNo))
-                exit(1)
-
-            t.skipToken()
-            return
-        elif tokNo != 7:
-            # else error checking
-            print("Error: Expected else, got " + str(tokNo))
-            exit(1)
-
-        t.skipToken()
-
-        # parse the if statement's second statement sequence
-        self._ss2 = SS()
-        self._ss2.parseSS()
+            self.ss2 == SS()
+            self.ss2.parseSS()
+        else:
+            self.type = 1
 
         # error check for the end token
         tokNo = t.getToken()
         if tokNo != 3:
             print("Error: Expected end, got " + str(tokNo))
             exit(1)
-        else:
-            t.skipToken()
 
-            # error check for the semicolon token
-            tokNo = t.getToken()
-            if tokNo != 12:
-                print("Error: Expected ;, got " + str(tokNo))
-                exit(1)
+        t.skipToken()
 
-            t.skipToken()
-            return
+        # error check for the semicolon token
+        tokNo = t.getToken()
+        if tokNo != 12:
+            print("Error: Expected ;, got " + str(tokNo))
+            exit(1)
+        
+        t.skipToken()
+
 
 
     def printIf(self):
@@ -374,11 +355,10 @@ class If():
 
 
     def execIf(self):
-        # if ss2 is not null from parsing, we can account for an else stmt, otherwise only account for if stmt
-        if self._c.evalCond():
-            self._ss1.execSS()
-        elif self._ss2 is not None:
-            self._ss2.execSS()
+        if self.c.evalCond():
+            self.ss1.execSS()
+        elif self.type==2:
+            self.ss2.execSS()
 
 
 class Id():
@@ -476,7 +456,6 @@ class Id():
             print("Error: Id is not declared")
             exit(1)
 
-
         # read in the value
         val = input.readline()
 
@@ -487,17 +466,18 @@ class Id():
         #try catch casting val to int and setting to Id's value
         try:
             self._val = int(val)
+            # set initialized to true
+            self._initialized = True
         except ValueError:
             print("Error: Expected int, got " + val)
             exit(1)
         
-        # set initialized to true
-        self._initialized = True
 
 
 class Cond():
-    _c1 = None
-    _c2 = None
+    c1 = None
+    c2 = None
+    comp = None
     type: int = None
 
     def parseCond(self):
@@ -512,22 +492,22 @@ class Cond():
         # handle ( token
         if tokNo == 20:
             self.type = 1
-            self._c1 = Comp()
-            self._c1.parseComp()
+            self.comp = Comp()
+            self.comp.parseComp()
             
         # handle ! token    
         elif tokNo == 15:
             t.skipToken()
             self.type = 2
-            self._c1 = Cond()
-            self._c1.parseCond()
+            self.c1 = Cond()
+            self.c1.parseCond()
         
         # handle [ token
         elif tokNo == 16:
             t.skipToken()
     
-            self._c1 = Cond()
-            self._c1.parseCond()
+            self.c1 = Cond()
+            self.c1.parseCond()
             
             # check for && or || operators
             tokNo = t.getToken()
@@ -543,8 +523,8 @@ class Cond():
             t.skipToken()
 
             # parse the second condition
-            self._c2 = Cond()
-            self._c2.parseCond()
+            self.c2 = Cond()
+            self.c2.parseCond()
 
             # error check for ] token
             tokNo = t.getToken()
@@ -556,32 +536,32 @@ class Cond():
 
     def printCond(self):
         if self.type == 1:
-            self._c1.printComp()
+            self.comp.printComp()
         elif self.type == 2:
             print("!", end="")
-            self._c1.printCond()
+            self.c1.printCond()
         elif self.type == 3:
             print("[", end="")
-            self._c1.printCond()
+            self.c1.printCond()
             print(" && ", end="")
-            self._c2.printCond()
+            self.c2.printCond()
             print("]", end="")
         elif self.type == 4:
             print("[", end="")
-            self._c1.printCond()
+            self.c1.printCond()
             print(" || ", end="")
-            self._c2.printCond()
+            self.c2.printCond()
             print("]", end="")
     
     def evalCond(self) -> bool:
         if(self.type == 1):
-            return self._c1.evalComp()
+            return self.comp.evalComp()
         elif(self.type == 2):
-            return not self._c1.evalCond()
+            return not self.c1.evalCond()
         elif(self.type == 3):
-            return self._c1.evalCond() and self._c2.evalCond()
+            return self.c1.evalCond() and self.c2.evalCond()
         elif(self.type == 4):
-            return self._c1.evalCond() or self._c2.evalCond()
+            return self.c1.evalCond() or self.c2.evalCond()
             
 
 class IdList():
@@ -637,7 +617,7 @@ class IdList():
     def readIdList(self):
         self._id.readId()
         if self._idList is not None:
-            self._idList.readIdList()        
+            self._idList.readIdList()
 
 
 class DS():
@@ -741,27 +721,9 @@ class Exp():
         if self.type == 1:
             return self.fac.evalFac()
         elif self.type == 2:
-            return self.fac.evalFac() + self.fac.evalExp()
+            return self.fac.evalFac() + self.exp.evalExp()
         elif self.type == 3:
-            return self.fac.evalFac() - self.fac.evalExp()
-
-
-
-class SumExp(Exp):
-    _e1: Exp
-    _e2: Exp
-
-    def init(self, e: Exp, f:Exp):
-        self._e1 = e
-        self._e2 = f
-
-    def evalExp(self) -> int:
-        return self._e1.evalExp() + self._e2.evalExp()
-
-    
-    def printExp():
-        pass
-
+            return self.fac.evalFac() - self.exp.evalExp()
 
 
 class Op():
@@ -889,25 +851,25 @@ class Comp():
     def evalComp(self) -> bool:
         op1 = self.op1.evalOp()
         op2 = self.op2.evalOp()
-        compOp = self.compOp._type
+        compOp = self.compOp.type
 
-        if compOp == 1:
+        if self.compOp.type == 1:
             return op1 != op2
-        elif compOp == 2:
+        elif self.compOp.type == 2:
             return op1 == op2
-        elif compOp == 3:
+        elif self.compOp.type == 3:
             return op1 < op2
-        elif compOp == 4:
+        elif self.compOp.type == 4:
             return op1 > op2
-        elif compOp == 5:
+        elif self.compOp.type == 5:
             return op1 <= op2
-        elif compOp == 6:
+        elif self.compOp.type == 6:
             return op1 >= op2
         
         
 
 class CompOp():
-    _type: int = None
+    type: int = None
 
     def parseCompOp(self):
         tokNo: int = None
@@ -918,27 +880,27 @@ class CompOp():
             exit(1)
 
         t.skipToken()
-        self._type = tokNo - 24
+        self.type = tokNo - 24
 
     def printCompOp(self):
-        if self._type == 1:
+        if self.type == 1:
             print("!=", end="")
-        elif self._type == 2:
+        elif self.type == 2:
             print("==", end="")
-        elif self._type == 3:
+        elif self.type == 3:
             print("<", end="")
-        elif self._type == 4:
+        elif self.type == 4:
             print(">", end="")
-        elif self._type == 5:
+        elif self.type == 5:
             print("<=", end="")
-        elif self._type == 6:
+        elif self.type == 6:
             print(">=", end="")
 
 
 
 class Input():
 
-    _idList = None
+    idList = None
 
     def parseInput(self):
         tokNo = None
@@ -951,11 +913,10 @@ class Input():
 
         t.skipToken()
 
-        self._idList = IdList()
-        self._idList.parseIdList(False)
+        self.idList = IdList()
+        self.idList.parseIdList(False)
 
         tokNo = t.getToken()
-
         # error check for the semicolon token
         if tokNo != 12:
             print("Error: Expected ;, got " + str(tokNo))
@@ -965,15 +926,15 @@ class Input():
 
     def printInput(self):
         print("read ", end="")
-        self._idList.printIdList()
+        self.idList.printIdList()
         print(";\n", end="")
 
     def execInput(self):
-        self._idList.readIdList()
+        self.idList.readIdList()
 
 
 class Output():
-    _idList = None
+    idList = None
 
     def parseOutput(self):
         tokNo = None
@@ -986,8 +947,8 @@ class Output():
 
         t.skipToken()
 
-        self._idList = IdList()
-        self._idList.parseIdList(False)
+        self.idList = IdList()
+        self.idList.parseIdList(False)
 
         tokNo = t.getToken()
 
@@ -1001,17 +962,9 @@ class Output():
 
     def printOutput(self):
         print("write ", end="")
-        self._idList.printIdList()
+        self.idList.printIdList()
         print(";\n", end="")
 
 
     def execOutput(self):
-        self._idList.writeIdList()
-
-
-
-
-
-
-
-    
+        self.idList.writeIdList()
